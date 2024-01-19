@@ -1,70 +1,48 @@
 package main
 
-func min(a,b,c int)int{
-    if a<b && a<c{
-        return a
-    }
-    if b<a && b<c{
-        return b
-    }
-    return c
+import (
+	"fmt"
+	"sort"
+)
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
-func minDistance1(word1 string, word2 string) int {
-	lg1, lg2 := len(word1), len(word2)
-	// 初始化dp
-	dp := make([][]int, lg1+1)
-	for i := 0; i < lg1+1; i++ {
-		dp[i] = make([]int, lg2+1)
+func minDays(bloomDay []int, m int, k int) int {
+	lg := len(bloomDay)
+	M := make(map[int]int)
+	res := [][]int{}
+	if lg < m*k {
+		return -1
 	}
-	// 赋初值
-	for i := 1; i <= lg1; i++ {
-		dp[i][0] = dp[i-1][0] + 1
+	for i := 0; i <= lg-k; i++ {
+		tmp := 0
+		for j := i; j < i+k; j++ {
+			tmp = max(tmp, bloomDay[j])
+		}
+		res = append(res, []int{tmp, i})
 	}
-	for j := 1; j <= lg2; j++ {
-		dp[0][j] = dp[0][j-1] + 1
-	}
-
-	for i := 1; i <= lg1; i++ {
-		for j := 1; j <= lg2; j++ {
-			if word1[i-1] == word2[j-1] {
-				dp[i][j] = dp[i-1][j-1]
-			} else {
-				dp[i][j] = min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]) + 1
+	sort.Slice(res, func(i, j int) bool { return res[i][0] < res[j][0] })
+	cnt := 0
+	for _, nums := range res {
+		if M[nums[1]] == 0 {
+			cnt++
+			if cnt == m {
+				return nums[0]
+			}
+			for i := 0; i < k; i++ {
+				M[nums[1]+i]++
 			}
 		}
 	}
-	return dp[lg1][lg2]
+	return -1
 }
 
-func minDistance2(word1 string, word2 string) int {
-	n1 := len(word1)
-	n2 := len(word2)
-	dp := make([][]int, n1+1)
-	for i := range dp {
-		dp[i] = make([]int, n2+1)
-	}
-
-	// Initialize the first row
-	for j := 1; j <= n2; j++ {
-		dp[0][j] = dp[0][j-1] + 1
-	}
-
-	// Initialize the first column
-	for i := 1; i <= n1; i++ {
-		dp[i][0] = dp[i-1][0] + 1
-	}
-
-	// Fill the DP table
-	for i := 1; i <= n1; i++ {
-		for j := 1; j <= n2; j++ {
-			if word1[i-1] == word2[j-1] {
-				dp[i][j] = dp[i-1][j-1]
-			} else {
-				dp[i][j] = min(dp[i][j-1], dp[i-1][j], dp[i-1][j-1]) + 1
-			}
-		}
-	}
-
-	return dp[n1][n2]
+func main() {
+	a := []int{56,89,16,25,33,49,6,95,16,8,63,53,38,1,91}
+	fmt.Println(minDays(a,5,3))
 }

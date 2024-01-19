@@ -1,6 +1,10 @@
 go 1.20
 
 use (
+	./Gomonkey
+	./GoDog
+	./AutoTest
 	./MircroService_Gin_CICD/self
 	./realtime_chat
+	./test
 )
